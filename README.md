@@ -1,97 +1,84 @@
-PROGIS Map
+# PROGIS Map
 
-Одностраничное веб-приложение на React + TypeScript с интерактивной картой на Leaflet. Поддерживает слои XYZ, WMS и WFS, обработку кликов по объектам, получение данных через GetFeatureInfo / GeoJSON, подсветку выбранных объектов, drag-and-drop порядок слоёв и всплывающие окна с атрибутами.
+Одностраничная геоинформационная система для просмотра и анализа картографических слоёв. Приложение объединяет Leaflet, OGC-сервисы WMS/WFS и интерактивное управление слоями в React-интерфейсе.
 
-📦 Стек технологий
+## Возможности
 
-React, TypeScript, Vite, Tailwind CSS
+- отображение XYZ, WMS и WFS-слоёв;
+- получение атрибутов объектов через GetFeatureInfo и GeoJSON;
+- подсветка, центрирование и popup выбранного объекта;
+- изменение порядка слоёв через drag-and-drop;
+- просмотр и копирование атрибутов в JSON;
+- уведомления об ошибках внешних геосервисов;
+- конфигурация источников через JSON.
 
-react-leaflet, Leaflet
+## Стек
 
-axios, Zustand
+- React 18 и TypeScript;
+- Vite и Tailwind CSS;
+- Leaflet и React Leaflet;
+- Turf.js для пространственных операций;
+- Zustand для состояния;
+- dnd-kit для сортировки слоёв;
+- Axios;
+- Vitest и Testing Library.
 
-dnd-kit
+## Архитектура
 
-ESLint, Prettier, Husky + lint-staged
+```mermaid
+flowchart LR
+    Config["Layer configuration"] --> Map["React Leaflet map"]
+    Map --> WMS["WMS GetMap / GetFeatureInfo"]
+    Map --> WFS["WFS GeoJSON"]
+    WMS --> Selection["Zustand selection state"]
+    WFS --> Selection
+    Selection --> Popup["Feature popup and highlight"]
+```
 
-Vitest
+OGC-запросы формируются в `src/lib/ogc/`, карта и управление слоями находятся в `src/components/MapView/`, а выбранный объект хранится отдельно в Zustand store.
 
-🚀 Запуск проекта
+## Локальный запуск
 
-Установите Node.js 18+
+Требуется Node.js 18 или новее.
 
-Установите зависимости:
-
+```bash
 npm install
-
-
-Запустите проект в режиме разработки:
-
 npm run dev
+```
 
+## Проверки
 
-Сборка и предпросмотр:
+```bash
+npm run lint
+npm test -- --run
+npm run build
+```
 
-npm run build && npm run preview
+В репозитории есть компонентный smoke-test основного приложения. Для полноценного покрытия дополнительно нужны тесты OGC-запросов, обработки ошибок и взаимодействия со слоями.
 
-⚙️ Конфигурация
+## Конфигурация слоёв
 
-Создайте файл .env в корне проекта (если используется Basic Auth):
+Начальную конфигурацию можно взять из `src/config/layers.example.json`. Поддерживаемые типы:
 
-VITE_WMS_USER=mo
-VITE_WMS_PASS=mo
+- `xyz` — обычный tile layer;
+- `wms` — растровый OGC-слой и GetFeatureInfo;
+- `wfs` — векторные объекты GeoJSON.
 
+Если публичный demo-сервис требует Basic Auth, приложение умеет читать:
 
-Пример конфигурации слоёв: src/config/layers.json
+```dotenv
+VITE_WMS_USER=<public-demo-user>
+VITE_WMS_PASS=<public-demo-password>
+```
 
-[
-  {
-    "id": "osm",
-    "type": "xyz",
-    "name": "OpenStreetMap",
-    "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    "visible": true
-  },
-  {
-    "id": "countries",
-    "type": "wms",
-    "name": "Страны мира",
-    "url": "https://demo.zulugis.ru/geoserver/wms",
-    "layers": "ne:ne_10m_admin_0_countries",
-    "version": "1.3.0",
-    "visible": true
-  }
-]
+Переменные с префиксом `VITE_` попадают в browser bundle. Их нельзя использовать для production credentials или доступа к привилегированным геосервисам. В таком случае аутентификацию следует выполнять через server-side proxy.
 
-🗺️ Основные возможности
+## Структура
 
-Поддержка слоёв XYZ, WMS и WFS
+- `src/components/MapView/` — карта, слои и popup;
+- `src/lib/ogc/` — WMS/WFS-запросы;
+- `src/config/` — конфигурация источников;
+- `src/state/` — состояние выбранного объекта;
+- `src/types/ogc.ts` — типы OGC-данных.
 
-Обработка кликов и получение атрибутов объектов
-
-Popup с данными и копированием в JSON
-
-Подсветка и центрирование выбранного объекта
-
-Drag-and-drop порядок слоёв
-
-Уведомления об ошибках
-
-📁 Структура проекта
-src/
-  app/App.tsx
-  components/MapView/
-    MapView.tsx
-    LayerControl.tsx
-    FeaturePopup.tsx
-  components/common/Spinner.tsx
-  config/layers.json
-  lib/ogc/wms.ts
-  lib/ogc/wfs.ts
-  state/selection.ts
-  styles/index.css
-  types/ogc.ts
-  utils/leaflet.ts
-
-
-💡 Проект демонстрирует навыки работы с геосервисами OGC (WMS/WFS), интеграцию с внешними API, работу с пространственными данными и построение интерактивных интерфейсов на React.
+Проект демонстрирует интеграцию внешних GIS API, работу с пространственными данными и построение интерактивного картографического интерфейса.
