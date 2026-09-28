@@ -3,6 +3,8 @@ PROGIS Map
 
 [![Просмотры README](https://vbr.nathanchung.dev/badge?page_id=Richbanker.PROGIS-Map&text=README_Views)](https://github.com/Richbanker/PROGIS-Map)
 
+[Открыть проект](https://rebrand.ly/richbanker-progis)
+
 Одностраничное веб-приложение на React + TypeScript с интерактивной картой на Leaflet. Поддерживает слои XYZ, WMS и WFS, обработку кликов по объектам, получение данных через GetFeatureInfo / GeoJSON, подсветку выбранных объектов, drag-and-drop порядок слоёв и всплывающие окна с атрибутами.
 
 📦 Стек технологий
