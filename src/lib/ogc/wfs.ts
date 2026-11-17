@@ -14,10 +14,10 @@ export async function getFeature(params: GetFeatureParams) {
     service: 'WFS',
     request: 'GetFeature',
     version,
-    typeNames: typeName,
     outputFormat: 'application/json',
     srsName: crs
   });
+  query.set(version === '2.0.0' ? 'typeNames' : 'typeName', typeName);
   if (extraParams) {
     Object.entries(extraParams).forEach(([k, v]) => query.set(k, String(v)));
   }
