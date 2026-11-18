@@ -48,9 +48,13 @@ export function FeaturePopup({ data, onCopy, onCenter }: Props) {
       <div className="mt-4 pt-3 border-t border-gray-200 flex gap-2">
         <button
           className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-2.5 text-white hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95"
-          onClick={() => {
-            navigator.clipboard.writeText(JSON.stringify(data, null, 2));
-            onCopy?.();
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+              onCopy?.();
+            } catch (error) {
+              console.warn('Не удалось скопировать данные объекта', error);
+            }
           }}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
