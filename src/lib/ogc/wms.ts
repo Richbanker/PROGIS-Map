@@ -32,7 +32,8 @@ export function buildWmsTileUrl(params: GetMapParams) {
   if (extraParams) {
     Object.entries(extraParams).forEach(([k, v]) => query.set(k, String(v)));
   }
-  return `${url}?${query.toString()}`;
+  const separator = url.includes('?') ? (/[?&]$/.test(url) ? '' : '&') : '?';
+  return `${url}${separator}${query.toString()}`;
 }
 
 type GetFeatureInfoParams = {
@@ -96,7 +97,8 @@ export async function getFeatureInfo(params: GetFeatureInfoParams) {
     Object.entries(extraParams).forEach(([k, v]) => query.set(k, String(v)));
   }
 
-  const resp = await http.get(`${url}?${query.toString()}`, {
+  const separator = url.includes('?') ? (/[?&]$/.test(url) ? '' : '&') : '?';
+  const resp = await http.get(`${url}${separator}${query.toString()}`, {
     responseType: infoFormat === 'application/json' ? 'json' : 'text'
   });
 
