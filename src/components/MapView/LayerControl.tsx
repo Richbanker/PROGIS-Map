@@ -62,8 +62,11 @@ export function LayerControl({ layers, onChange }: Props) {
 
   return (
     <div className="absolute top-4 left-4 z-[1000] w-80 rounded-xl bg-white/95 backdrop-blur-md shadow-2xl border border-gray-200/50 overflow-hidden transition-all duration-300">
-      <div
-        className="px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between cursor-pointer select-none"
+      <button
+        type="button"
+        aria-expanded={!collapsed}
+        aria-label="Показать или скрыть слои карты"
+        className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between text-left cursor-pointer select-none"
         onClick={() => setCollapsed(!collapsed)}
       >
         <div className="flex items-center gap-2">
@@ -85,7 +88,7 @@ export function LayerControl({ layers, onChange }: Props) {
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
-      </div>
+      </button>
 
       {!collapsed && (
         <DndContext
