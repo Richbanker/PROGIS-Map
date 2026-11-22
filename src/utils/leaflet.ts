@@ -3,12 +3,15 @@ import { LatLngBoundsExpression } from 'leaflet';
 export function unionBbox(
   bboxes: Array<[number, number, number, number]>
 ): LatLngBoundsExpression | null {
-  if (bboxes.length === 0) return null;
-  const first = bboxes[0];
+  const validBboxes = bboxes.filter(([minX, minY, maxX, maxY]) =>
+    [minX, minY, maxX, maxY].every(Number.isFinite) &&
+    minX <= maxX && minY <= maxY
+  );
+  const first = validBboxes[0];
   if (!first) return null;
   let [minX, minY, maxX, maxY] = first;
-  for (let i = 1; i < bboxes.length; i += 1) {
-    const bbox = bboxes[i];
+  for (let i = 1; i < validBboxes.length; i += 1) {
+    const bbox = validBboxes[i];
     if (!bbox) continue;
     const [x1, y1, x2, y2] = bbox;
     minX = Math.min(minX, x1);
