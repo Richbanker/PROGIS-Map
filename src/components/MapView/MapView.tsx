@@ -41,6 +41,7 @@ export function MapView() {
   }, [layers]);
 
   useEffect(() => {
+    let cancelled = false;
     const loadWfs = async () => {
       const wfsLayers = layers.filter(
         (l): l is WFSLayerConfig => l.type === 'wfs' && (l.visible ?? true)
@@ -68,24 +69,30 @@ export function MapView() {
             const data = await Promise.race([dataPromise, timeoutPromise]);
             return [l.id, data] as const;
           } catch (err) {
-            console.error(`Ошибка загрузки слоя ${l.name}:`, err);
-            toast.error(`Не удалось загрузить слой: ${l.name}`);
+            if (!cancelled) {
+              console.error(`Ошибка загрузки слоя ${l.name}:`, err);
+              toast.error(`Не удалось загрузить слой: ${l.name}`);
+            }
             return null;
           }
         });
         const results = await Promise.all(tasks);
+        if (cancelled) return;
         const validEntries = results.filter(
           (r): r is [string, GeoJSON.FeatureCollection] => r !== null
         );
         setGeojsonData((prev) => ({ ...prev, ...Object.fromEntries(validEntries) }));
       } catch (e) {
-        console.error('Ошибка загрузки WFS:', e);
-        toast.error('Ошибка загрузки WFS слоёв');
+        if (!cancelled) {
+          console.error('Ошибка загрузки WFS:', e);
+          toast.error('Ошибка загрузки WFS слоёв');
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     loadWfs();
+    return () => { cancelled = true; };
   }, [layers]);
 
   const onMapClick = async (e: L.LeafletMouseEvent) => {
@@ -219,6 +226,7 @@ export function MapView() {
             }
             if (l.type === 'wfs') {
               const data = geojsonData[l.id];
+              if (!data) return null;
               return (
                 <GeoJSON
                   key={l.id}
